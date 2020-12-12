@@ -3,7 +3,7 @@
     <div class="navbar">
       <div class="container">
         <div class="navbar-content">
-          <a class="header-logo" href="index.html">Film library</a>
+          <router-link to="/">Film library</router-link>
           <div
             class="button-burger"
             @click="menuShow = !menuShow"

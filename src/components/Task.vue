@@ -63,17 +63,65 @@
               </div>
             </div>
             <div class="tag_list">
-              <div
-                class="ui-tag__wrapper"
-                v-for="(tag, index) in task.tags"
-                :key="index"
-              >
-                <div class="ui-tag" :class="{ activeTag: tag.use }">
-                  <span class="tag-title">{{ tag.title }}</span>
+              <div>
+                <div
+                  class="ui-tag__wrapper"
+                  v-for="(tag, index) in task.tags"
+                  :key="index"
+                >
+                  <div class="ui-tag" :class="{ activeTag: tag.use }">
+                    <span class="tag-title">{{ tag.title }}</span>
+                  </div>
                 </div>
+              </div>
+              <div>
+                <button
+                  class="button button--round button-primary"
+                  @click="editTask(task.id, task.title, task.description)"
+                >
+                  Редактировать
+                </button>
               </div>
             </div>
           </div>
+        </div>
+      </div>
+    </div>
+    <div
+      class="ui-messageBox__wrapper"
+      v-if="showModal"
+      :class="{ active: showModal }"
+    >
+      <div class="ui-messageBox fadeInDown">
+        <div class="ui-messageBox__header">
+          <span class="messageBox-title">Задача</span
+          ><span
+            class="button-close ui-messageBox-close"
+            @click="exitShowModal"
+          ></span>
+        </div>
+        <div class="ui-messageBox__content">
+          <form action="">
+            <label for="">Название</label>
+            <input
+              type="text"
+              placeholder="Название"
+              v-model="taskEdit.title"
+            />
+            <label for="">Описание</label>
+            <textarea
+              name=""
+              id=""
+              cols="30"
+              rows="10"
+              placeholder="Описание"
+              v-model="taskEdit.description"
+            ></textarea>
+          </form>
+        </div>
+        <div class="ui-messageBox__footer">
+          <div class="button button-light" @click="exitShowModal">Cancel</div>
+          <div class="button button-primary" @click="saveEditTask">OK</div>
         </div>
       </div>
     </div>
@@ -85,7 +133,34 @@ import { mapGetters } from "vuex";
 export default {
   data: () => ({
     filter: "active",
+    showModal: false,
+    taskEdit: {
+      id: null,
+      title: "",
+      description: "",
+    },
   }),
+  methods: {
+    editTask(id, title, description) {
+      this.showModal = !this.showModal;
+      this.taskEdit.id = id;
+      this.taskEdit.title = title;
+      this.taskEdit.description = description;
+    },
+    exitShowModal() {
+      this.showModal = false;
+      this.taskEdit.title = "title";
+      this.taskEdit.description = "description";
+    },
+    saveEditTask(){
+      this.$store.dispatch('EDIT_TASK', {
+        id: this.taskEdit.id,
+        title: this.taskEdit.title,
+        description: this.taskEdit.description
+      });
+      this.showModal = false;
+    }
+  },
   computed: {
     ...mapGetters(["tasks"]),
     filteredTasks() {
@@ -112,7 +187,7 @@ export default {
 }
 .completed {
   opacity: 0.8;
-  filter: blur(.8);
+  filter: blur(0.8);
   h4,
   p {
     text-decoration: line-through;
@@ -150,6 +225,9 @@ export default {
   }
 }
 .tag_list {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   .ui-tag__wrapper {
     margin-right: 15px;
   }
@@ -163,5 +241,8 @@ export default {
   display: flex;
   align-items: center;
   justify-content: space-between;
+}
+.active {
+  display: flex;
 }
 </style>
